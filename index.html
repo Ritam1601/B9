@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wave Image Reveal</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #222;
+      margin: 0;
+      color: white;
+      font-family: 'Georgia', serif;
+    }
+
+    .collage-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      overflow: hidden;
+    }
+
+    .tile {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-size: 400px 400px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out, left 1s ease-in-out, top 1s ease-in-out;
+    }
+
+    .click-button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .click-button.show {
+      opacity: 1;
+    }
+
+    .poem {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: rgba(0, 0, 0, 0.6);
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.0;
+      opacity: 0;
+      transition: opacity 1.6s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .poem.show {
+      opacity: 1;
+    }
+
+    .poem div {
+      max-width: 90%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="collage-container" id="collage">
+  <div class="poem" id="poem">
+    <div>
+      You are to me like a whisper soft,<br>
+      A gentle breeze, a dream aloft.<br>
+      Your kindness shines, so pure, so true,<br>
+      A golden glow in skies so blue.<br><br>
+
+      Your eyes, like stars in midnight’s grace,<br>
+      Hold galaxies I long to trace.<br>
+      Each smile of yours, a sunbeam bright,<br>
+      That turns my world from dark to light.<br><br>
+
+      Your voice—like music, soft and sweet,<br>
+      A song where love and laughter meet.<br><br>
+
+      Oh, beauty fair and soul so kind,<br>
+      You're etched like poetry in my mind.<br>
+      And if you'll let me, I shall stay,<br>
+      To love, admire, and walk your way.
+    </div>
+  </div>
+</div>
+
+<button class="click-button" id="clickButton">Click Here</button>
+
+<script>
+  const container = document.getElementById("collage");
+  const imageUrl = "12.jpg";
+  const rows = 10, cols = 10;
+  const tileSize = 40;
+  const tiles = [];
+  let waveOrder = [];
+
+  // Create tiles
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const tile = document.createElement("div");
+      tile.classList.add("tile");
+      tile.style.backgroundImage = `url(${imageUrl})`;
+      tile.style.backgroundPosition = `-${col * tileSize}px -${row * tileSize}px`;
+      
+      const correctLeft = col * tileSize;
+      const correctTop = row * tileSize;
+      tile.dataset.correctLeft = correctLeft;
+      tile.dataset.correctTop = correctTop;
+
+      tile.style.left = `${Math.random() * 400}px`;
+      tile.style.top = `${Math.random() * 400}px`;
+
+      tiles.push(tile);
+      container.appendChild(tile);
+
+      const waveIndex = row + col;
+      if (!waveOrder[waveIndex]) {
+        waveOrder[waveIndex] = [];
+      }
+      waveOrder[waveIndex].push(tile);
+    }
+  }
+
+  // Animate tiles in wave
+  function animateTiles() {
+    waveOrder.forEach((group, waveIndex) => {
+      group.forEach((tile, index) => {
+        setTimeout(() => {
+          tile.style.opacity = "1";
+          tile.style.left = tile.dataset.correctLeft + "px";
+          tile.style.top = tile.dataset.correctTop + "px";
+        }, waveIndex * 200 + index * 30);
+      });
+    });
+
+    // Show button after animation finishes
+    const totalDelay = waveOrder.length * 200 + 1000;
+    setTimeout(() => {
+      document.getElementById("clickButton").classList.add("show");
+    }, totalDelay);
+  }
+
+  // Handle button click
+  document.getElementById("clickButton").addEventListener("click", () => {
+    tiles.forEach(tile => {
+      tile.style.opacity = "0";
+    });
+    document.getElementById("poem").classList.add("show");
+  });
+
+  window.onload = animateTiles;
+</script>
+
+</body>
+</html>
